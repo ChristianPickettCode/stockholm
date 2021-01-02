@@ -1,0 +1,20 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-atlisstockholm-dev-165948-authRole",
+      "UnauthRoleArn": "arn:aws:iam::207802189926:role/amplify-atlisstockholm-dev-165948-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::207802189926:role/amplify-atlisstockholm-dev-165948-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-atlisstockholm-dev-165948-deployment",
+      "UnauthRoleName": "amplify-atlisstockholm-dev-165948-unauthRole",
+      "StackName": "amplify-atlisstockholm-dev-165948",
+      "StackId": "arn:aws:cloudformation:us-east-1:207802189926:stack/amplify-atlisstockholm-dev-165948/d672c4e0-4d45-11eb-a725-12a48490849f",
+      "AmplifyAppId": "d3kdkuxeuxun5y"
+    },
+    "categories": {
+      "auth": {
+        "atlisstockholm041f649e": {}
+      }
+    }
+  }
+}
