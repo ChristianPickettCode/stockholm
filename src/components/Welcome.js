@@ -89,6 +89,7 @@ const Welcome = () => {
                                         .graphql(graphqlOperation(deleteUserKey, {input: {id: k.ukID}} ))
                                         .then(res => {
                                             Toast.success("Saved App Data.")
+                                            window.location = "/";
                                         })
                                         .catch(err => {
                                             console.log(err);
