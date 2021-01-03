@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { InputItem, WingBlank, Button, WhiteSpace, Toast, ActivityIndicator } from 'antd-mobile';
 import { API, Auth, graphqlOperation } from 'aws-amplify';
 import { listUserKeys } from '../graphql/queries';
-import { createUserKey } from '../graphql/mutations';
+import { createUser, createUserKey } from '../graphql/mutations';
 import { Link } from 'react-router-dom';
+import jwt from "jsonwebtoken";
 
 const SignIn = () => {
     const [email, setEmail] = useState();
@@ -28,27 +29,39 @@ const SignIn = () => {
 
     const answerCustomChallenge = async () => {
         if (tempPass) {
+            Toast.loading("Signing in...", 7);
             await Auth.sendCustomChallengeAnswer(cognitoUser, tempPass).then(async (res) => {
                 console.log(res);
                 await Auth.currentSession().then(async (res) => {
                     setSuccess(true);
                     Toast.success("Successfully signed in...redirecting", 2);
                     const sub = res.getIdToken().payload.sub ;
+                    const email = res.getIdToken().payload.email;
                     await API   
                         .graphql(graphqlOperation(listUserKeys, { input: { filter: { userID : { eq : sub } } } } ))
                         .then( async (res) => {
                             if (res.data.listUserKeys.items.length === 0) {
                                 await API
-                                .graphql(graphqlOperation(createUserKey, { input : { userID: sub }}))
-                                .then(res => {
-                                    console.log(res);
-                                    window.location = "/";
-                                })
-                                .catch( async(err) => {
-                                    console.log(err);
-                                    Toast.fail("An error occured signing in.", 3);
-                                    await Auth.signOut().then(res => window.location = "/").catch(err => Toast.fail("Issue sigining out"));
-                                })
+                                    .graphql(graphqlOperation(createUserKey, { input : { userID: sub }}))
+                                    .then(async (res) => {
+                                        console.log(res.data.createUserKey);
+                                        const d = jwt.sign({ id: sub, primaryEmail: email, apps: {} }, res.data.createUserKey.id);
+                                        await API
+                                            .graphql(graphqlOperation(createUser, { input : { data: d } }))
+                                            .then(res => {
+                                                console.log(res);
+                                                window.location = "/";
+                                            })
+                                            .catch(err => {
+                                                console.log(err);
+                                                Toast.fail("Error creating user", 3);
+                                            })
+                                    })
+                                    .catch( async(err) => {
+                                        console.log(err);
+                                        Toast.fail("An error occured signing in.", 3);
+                                        await Auth.signOut().then(res => window.location = "/").catch(err => Toast.fail("Issue sigining out"));
+                                    })
                             } else {
                                 console.log(res.data.listUserKeys.items);
                                 window.location = "/";
@@ -56,10 +69,7 @@ const SignIn = () => {
                         })
                         .catch(err => {
                             console.log(err);
-                        })
-    
-    
-                    
+                        })                    
                 }).catch(err => {
                     console.log(err);
                     Toast.fail("Incorrect code, try again.", 1);

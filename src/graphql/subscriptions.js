@@ -6,9 +6,9 @@ export const onCreateUserKey = /* GraphQL */ `
     onCreateUserKey(owner: $owner) {
       id
       userID
+      owner
       createdAt
       updatedAt
-      owner
     }
   }
 `;
@@ -17,9 +17,9 @@ export const onUpdateUserKey = /* GraphQL */ `
     onUpdateUserKey(owner: $owner) {
       id
       userID
+      owner
       createdAt
       updatedAt
-      owner
     }
   }
 `;
@@ -28,9 +28,42 @@ export const onDeleteUserKey = /* GraphQL */ `
     onDeleteUserKey(owner: $owner) {
       id
       userID
+      owner
       createdAt
       updatedAt
+    }
+  }
+`;
+export const onCreateUser = /* GraphQL */ `
+  subscription OnCreateUser($owner: String!) {
+    onCreateUser(owner: $owner) {
+      id
+      data
       owner
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onUpdateUser = /* GraphQL */ `
+  subscription OnUpdateUser($owner: String!) {
+    onUpdateUser(owner: $owner) {
+      id
+      data
+      owner
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onDeleteUser = /* GraphQL */ `
+  subscription OnDeleteUser($owner: String!) {
+    onDeleteUser(owner: $owner) {
+      id
+      data
+      owner
+      createdAt
+      updatedAt
     }
   }
 `;

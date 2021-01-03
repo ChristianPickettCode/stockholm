@@ -9,9 +9,9 @@ export const createUserKey = /* GraphQL */ `
     createUserKey(input: $input, condition: $condition) {
       id
       userID
+      owner
       createdAt
       updatedAt
-      owner
     }
   }
 `;
@@ -23,9 +23,9 @@ export const updateUserKey = /* GraphQL */ `
     updateUserKey(input: $input, condition: $condition) {
       id
       userID
+      owner
       createdAt
       updatedAt
-      owner
     }
   }
 `;
@@ -37,9 +37,51 @@ export const deleteUserKey = /* GraphQL */ `
     deleteUserKey(input: $input, condition: $condition) {
       id
       userID
+      owner
       createdAt
       updatedAt
+    }
+  }
+`;
+export const createUser = /* GraphQL */ `
+  mutation CreateUser(
+    $input: CreateUserInput!
+    $condition: ModelUserConditionInput
+  ) {
+    createUser(input: $input, condition: $condition) {
+      id
+      data
       owner
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const updateUser = /* GraphQL */ `
+  mutation UpdateUser(
+    $input: UpdateUserInput!
+    $condition: ModelUserConditionInput
+  ) {
+    updateUser(input: $input, condition: $condition) {
+      id
+      data
+      owner
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const deleteUser = /* GraphQL */ `
+  mutation DeleteUser(
+    $input: DeleteUserInput!
+    $condition: ModelUserConditionInput
+  ) {
+    deleteUser(input: $input, condition: $condition) {
+      id
+      data
+      owner
+      createdAt
+      updatedAt
     }
   }
 `;

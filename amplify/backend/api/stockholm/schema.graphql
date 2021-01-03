@@ -1,0 +1,15 @@
+type UserKey 
+  @model 
+  @auth(rules: [{ allow: owner }]) {
+  id: ID!
+  userID: ID!
+  owner: ID
+}
+
+type User 
+  @model 
+  @auth(rules: [{ allow: owner }]) {
+  id: ID!
+  data: String!
+  owner: ID
+}
