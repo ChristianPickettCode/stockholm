@@ -25,8 +25,12 @@ function App() {
         .then(async(res) => {
             if (res.data.listUserKeys.items.length === 0) {
               Toast.fail("No user found [1]", 2);
+              Auth.signOut();
+              window.location = "/";
             } else if (res.data.listUserKeys.items.length > 1) {
               Toast.fail("Can't find user : multiple [1]", 2);
+              Auth.signOut();
+              window.location = "/";
             } else {
               const k = res.data.listUserKeys.items[0];
               await API
@@ -40,7 +44,7 @@ function App() {
                     const d = res.data.listUsers.items[0];
                     try {
                       const u = jwt.verify(d.data, k.id);
-                      console.log(u);
+                      // console.log(u);
                       setUser(u);
                       setK({  ukID : k.id, uID: d.id });
                       Toast.success("Signed in.", 1);

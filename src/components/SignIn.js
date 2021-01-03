@@ -31,7 +31,7 @@ const SignIn = () => {
         if (tempPass) {
             Toast.loading("Signing in...", 7);
             await Auth.sendCustomChallengeAnswer(cognitoUser, tempPass).then(async (res) => {
-                console.log(res);
+                // console.log(res);
                 await Auth.currentSession().then(async (res) => {
                     setSuccess(true);
                     Toast.success("Successfully signed in...redirecting", 2);
@@ -44,12 +44,12 @@ const SignIn = () => {
                                 await API
                                     .graphql(graphqlOperation(createUserKey, { input : { userID: sub }}))
                                     .then(async (res) => {
-                                        console.log(res.data.createUserKey);
+                                        // console.log(res.data.createUserKey);
                                         const d = jwt.sign({ id: sub, primaryEmail: email, apps: {} }, res.data.createUserKey.id);
                                         await API
                                             .graphql(graphqlOperation(createUser, { input : { data: d } }))
                                             .then(res => {
-                                                console.log(res);
+                                                // console.log(res);
                                                 window.location = "/";
                                             })
                                             .catch(err => {
@@ -63,7 +63,7 @@ const SignIn = () => {
                                         await Auth.signOut().then(res => window.location = "/").catch(err => Toast.fail("Issue sigining out"));
                                     })
                             } else {
-                                console.log(res.data.listUserKeys.items);
+                                // console.log(res.data.listUserKeys.items);
                                 window.location = "/";
                             }
                         })

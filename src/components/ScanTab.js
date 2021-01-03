@@ -7,10 +7,12 @@ const ScanTab = () => {
     const [scanning, setScanning] = useState(false);
     const handleScan = (e) => {
         if (e) {
-            console.log(e);
-            Toast.success(e);
+            // Toast.success(e);
             setResult(e)
             setScanning(false);
+            Toast.loading("redirecting...", 1, () => {
+                window.location = e;
+            })
         }
         
     }
@@ -29,8 +31,6 @@ const ScanTab = () => {
                             style={{ width: '100%' }}
                         />
                     : <Button type="primary" onClick={() => setScanning(true)}>Scan</Button> }
-                    
-                    <p>{result}</p>
                 </div>
             </WingBlank>
         </div>

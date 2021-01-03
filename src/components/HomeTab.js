@@ -1,11 +1,15 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { WingBlank, WhiteSpace, List, Accordion } from 'antd-mobile';
+import { UserContext } from '../context/UserContext';
 
-const HomeTab = ({ currentUser }) => {
+const HomeTab = () => {
+
+    const user = useContext(UserContext);
+
     return (
         <WingBlank size="lg">
             <WhiteSpace size="lg" />
-            { currentUser ? Object.entries(currentUser.apps).map(([key, value]) => (
+            { user ? Object.entries(user.apps).map(([key, value]) => (
                 <div key={key}>
                     <Accordion>
                         <Accordion.Panel header={value.appName}>

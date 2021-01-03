@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
+import { API, Auth, graphqlOperation } from 'aws-amplify';
+import { useHistory } from "react-router-dom";
 
 import { w3cwebsocket as W3CWebSocket } from "websocket";
 import crypto from "crypto-js";
@@ -7,8 +9,14 @@ import { v4 as uuidv4 } from "uuid";
 import WelcomeModal from './WelcomeModal';
 import WelcomeConfirmModal from './WelcomeConfirmModal';
 
-const Welcome = () => {
+import { UserContext } from '../context/UserContext';
+import { KContext } from '../context/KContext';
 
+import { createUserKey, createUser, deleteUser, deleteUserKey } from '../graphql/mutations';
+import jwt from "jsonwebtoken";
+import { Toast } from 'antd-mobile';
+
+const Welcome = () => {
     const [modalVisible, setModalVisible] = useState(false);
     const [confirmModalVisible, setConfirmModalVisible] = useState(false);
 
@@ -17,120 +25,153 @@ const Welcome = () => {
 
     const [ws, setWs] = useState();
     const [app, setApp] = useState({});
-    const [sendData, setSendData] = useState({});
     const [saved, setSaved] = useState(false);
-    const [currentUser, setCurrentUser] = useState();
+    const [userAppId, setUserAppID] = useState();
+
+    const user = useContext(UserContext);
+    const k = useContext(KContext);
+    const history = useHistory();
 
     const fullSend = () => {
-        console.log(app);
         if (!saved) {
-            currentUser.apps[app.appID] = welcomeResponse;
-            currentUser.apps[app.appID].userAppID = uuidv4();
-            currentUser.apps[app.appID].appName = app.appName;
+            if(welcomeResponse) {
+                // console.log(welcomeRequest.requestID);
+                editData()
+                    .then(res => {
+                        // console.log("success", res);
+                        ws.send(JSON.stringify({
+                            message: "send",
+                            to: welcomeRequest.requestID,
+                            appID: app.appID,
+                            data: crypto.AES.encrypt(JSON.stringify({ ...welcomeResponse, userAppID: userAppId }), welcomeRequest.requestID).toString(),
+                            action: "message"
+                        }));
+                        history.push("/")
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    })
+            }
+        } else {
+            let responseData = {};
+            welcomeRequest.request.forEach((i) => { 
+                responseData[i] = user.apps[app.appID][i]  
+            });
 
-            console.log(currentUser);
-            console.log(welcomeRequest.requestID);
-
-            localStorage.setItem("user", 
-                JSON.stringify(currentUser)
-            )
             ws.send(JSON.stringify({
                 message: "send",
                 to: welcomeRequest.requestID,
                 appID: app.appID,
-                data: crypto.AES.encrypt(JSON.stringify({ ...welcomeResponse, userAppID: sendData.userAppID }), welcomeRequest.requestID).toString(),
+                data: crypto.AES.encrypt(JSON.stringify(responseData), welcomeRequest.requestID).toString(),
                 action: "message"
             }));
+            history.push("/")
         }
         
-        window.location = "/";
-    }   
-
-    const getUser = (appName, appID) => {
-        let user = localStorage.getItem("user");
+        
+    }  
+    const editData = async () => {
         if (user) {
-            let parsedUser = JSON.parse(user);
-            console.log(parsedUser)
-            if (!parsedUser.apps[appID]) {
-                console.log("HAVEN'T SEEN THIS APP BEFORE");
-                //const userAppID = uuidv4();
-                parsedUser.apps[appID] = {};
-                setModalVisible(true);
-            } else {
-                console.log("SAVED USER");
-                console.log(parsedUser)
-                setSaved(true);
-                setConfirmModalVisible(true);
-            }
+            Toast.loading("Saving.....", 2);
+            await API
+                .graphql(graphqlOperation(createUserKey, { input : { userID: user.id }}))
+                .then(async (res) => {
+                    const userAppID = uuidv4();
+                    setUserAppID(userAppID);
+                    const d = jwt.sign({ ...user, apps: { ...user.apps, [app.appID]: {...welcomeResponse, userAppID, appName: app.appName } } }, res.data.createUserKey.id);
+                    await API
+                        .graphql(graphqlOperation(createUser, { input : { data: d } }))
+                        .then( async(res) => {
+                            await API
+                                .graphql(graphqlOperation(deleteUser, {input : { id : k.uID} }))
+                                .then(async(res) => {
+                                    await API
+                                        .graphql(graphqlOperation(deleteUserKey, {input: {id: k.ukID}} ))
+                                        .then(res => {
+                                            Toast.success("Saved App Data.")
+                                        })
+                                        .catch(err => {
+                                            console.log(err);
+                                        })
+                                })
+                                .catch(err => {
+                                    console.log(err);
+                                })
+                        })
+                        .catch(err => {
+                            console.log(err);
+                            Toast.fail("Error editing user account", 3);
+                        })
+                })
+                .catch((err) => {
+                    console.log(err);
+                })
 
-            setCurrentUser(parsedUser);
-            setSendData({ ...parsedUser.apps[appID]});
+        }
+        
+    } 
 
-            localStorage.setItem("user", 
-                JSON.stringify(parsedUser)
-            );
-
+    const getAppData = (appID) => {
+        if (user.apps[appID]) {
+            setSaved(true);
+            setConfirmModalVisible(true);
         } else {
-            const id = uuidv4();
-            console.log("NEW USER")
-            localStorage.setItem("user", 
-                JSON.stringify({ id, apps: {} })
-            );
-            setCurrentUser({ id , apps: {}});
             setModalVisible(true);
         }
-        
-    };
+    }
 
     useEffect(() => {
-        let request = {};
-        window.location.search.replace("?", "").split("&").forEach(i => {
-            const r = i.split(/=(.+)/);
-            request[r[0]] = r[1];
-        });
-        request.data =  request.data.replace("[", "").replace("]","").split(",");
-        setWelcomeRequest(request);
-        
-        const appName = request.appName;
-        const appID = request.appID;
+        if (user) {
+            let request = {};
+            window.location.search.replace("?", "").split("&").forEach(i => {
+                const r = i.split(/=(.+)/);
+                request[r[0]] = r[1];
+            });
 
-        setApp({ appName, appID });
+            let d = jwt.verify(request.data, request.requestID);
+            request = { ...request, ...d };
 
-        getUser(appName, appID);
+            setWelcomeRequest(request);
 
-        const ws = new W3CWebSocket(`wss://u9j9kermu5.execute-api.us-east-1.amazonaws.com/dev`);
-        setWs(ws);
-        ws.onopen = () =>  {
-            console.log("connected.");
-            ws.send(JSON.stringify({
-                message: "connect",
-                action: "message"
-            }));
-        };
+            const appName = request.appName;
+            const appID = request.appID;
 
-        ws.onclose = () => {
-            console.log("disconnected.");
-        };
+            setApp({ appName, appID });
 
-        ws.onmessage = (msg) =>  {
-            if (msg.type === "message") {
-                const data = JSON.parse(msg.data);
-                if (data.status === "connect") {
-                    console.log(data.id);
-                    // setId(data.id);
+            getAppData(appID);
+
+            const ws = new W3CWebSocket(`wss://u9j9kermu5.execute-api.us-east-1.amazonaws.com/dev`);
+            setWs(ws);
+            ws.onopen = () =>  {
+                console.log("connected.");
+                ws.send(JSON.stringify({
+                    message: "connect",
+                    action: "message"
+                }));
+            };
+
+            ws.onclose = () => {
+                console.log("disconnected.");
+            };
+
+            ws.onmessage = (msg) =>  {
+                if (msg.type === "message") {
+                    const data = JSON.parse(msg.data);
+                    if (data.status === "connect") {
+                        console.log(data.id);
+                    }
+                    if (data.status === "send") {
+                        console.log("SEND: ", data);
+                    }
                 }
-                if (data.status === "send") {
-                    console.log("SEND: ", data);
-                }
-            }
-        };
+            };
 
-        // return () => {
-        //     ws.close();
-        // }
+        } else {
+            Auth.signOut();
+            window.location = "/"
+        }
         
-        
-    }, []);
+    }, [user]);
     return (
         <div>
             <WelcomeModal 
@@ -138,14 +179,12 @@ const Welcome = () => {
                 setModalVisible={setModalVisible} 
                 fullSend={fullSend} 
                 welcomeRequest={welcomeRequest} 
-                setWelcomeResponse={setWelcomeResponse} 
-                welcomeResponse={welcomeResponse}  />
+                setWelcomeResponse={setWelcomeResponse} />
             <WelcomeConfirmModal 
                 confirmModalVisible={confirmModalVisible} 
-                fullSend={fullSend} welcomeRequest={welcomeRequest} 
-                app={app} sendData={sendData} 
-                setConfirmModalVisible={setConfirmModalVisible} 
-                welcomeResponse={welcomeResponse} />
+                fullSend={fullSend} 
+                app={app}
+                setConfirmModalVisible={setConfirmModalVisible} />
         </div>
     )
 }

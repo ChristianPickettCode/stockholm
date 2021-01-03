@@ -29,7 +29,8 @@ const AccountTab = () => {
                                     await API
                                         .graphql(graphqlOperation(deleteUserKey, {input: {id: k.ukID}} ))
                                         .then(res => {
-                                            Toast.success("Saved.")
+                                            Toast.success("Saved.");
+                                            window.location = "/account";
                                         })
                                         .catch(err => {
                                             console.log(err);
@@ -79,7 +80,7 @@ const AccountTab = () => {
                         </Flex.Item>
                     </Flex>
                     
-                    <InputItem value={user.primaryEmail} disabled/>
+                    { user && user.primaryEmail && <InputItem value={user.primaryEmail} disabled/> }
 
                     { user && user.firstName ? "" : <Button type="primary" onClick={edit}>Edit</Button>}
                     
