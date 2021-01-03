@@ -1,0 +1,11 @@
+{
+    "AppSyncApiName": "atlisstockholm",
+    "DynamoDBBillingMode": "PAY_PER_REQUEST",
+    "DynamoDBEnableServerSideEncryption": false,
+    "AuthCognitoUserPoolId": {
+        "Fn::GetAtt": [
+            "authatlisstockholm041f649e",
+            "Outputs.UserPoolId"
+        ]
+    }
+}

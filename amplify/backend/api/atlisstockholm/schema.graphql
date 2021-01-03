@@ -1,0 +1,7 @@
+type UserKey 
+  @model 
+  @auth(rules: [{ allow: owner }])
+  @key(fields: ["userID"]) {
+  id: ID!
+  userID: String!
+}
