@@ -26,7 +26,6 @@ const Welcome = () => {
     const [ws, setWs] = useState();
     const [app, setApp] = useState({});
     const [saved, setSaved] = useState(false);
-    const [userAppId, setUserAppID] = useState();
 
     const user = useContext(UserContext);
     const k = useContext(KContext);
@@ -35,18 +34,18 @@ const Welcome = () => {
     const fullSend = () => {
         if (!saved) {
             if(welcomeResponse) {
-                // console.log(welcomeRequest.requestID);
-                editData()
+                const userAppID = uuidv4();
+                editData(userAppID)
                     .then(res => {
-                        // console.log("success", res);
                         ws.send(JSON.stringify({
                             message: "send",
                             to: welcomeRequest.requestID,
                             appID: app.appID,
-                            data: crypto.AES.encrypt(JSON.stringify({ ...welcomeResponse, userAppID: userAppId }), welcomeRequest.requestID).toString(),
+                            data: crypto.AES.encrypt(JSON.stringify({ ...welcomeResponse, userAppID }), welcomeRequest.requestID).toString(),
                             action: "message"
                         }));
-                        history.push("/")
+                        // history.push("/")
+                        window.location = "/";
                     })
                     .catch(err => {
                         console.log(err);
@@ -71,14 +70,12 @@ const Welcome = () => {
         
         
     }  
-    const editData = async () => {
+    const editData = async (userAppID) => {
         if (user) {
             Toast.loading("Saving.....", 2);
             await API
                 .graphql(graphqlOperation(createUserKey, { input : { userID: user.id }}))
                 .then(async (res) => {
-                    const userAppID = uuidv4();
-                    setUserAppID(userAppID);
                     const d = jwt.sign({ ...user, apps: { ...user.apps, [app.appID]: {...welcomeResponse, userAppID, appName: app.appName } } }, res.data.createUserKey.id);
                     await API
                         .graphql(graphqlOperation(createUser, { input : { data: d } }))
@@ -90,7 +87,7 @@ const Welcome = () => {
                                         .graphql(graphqlOperation(deleteUserKey, {input: {id: k.ukID}} ))
                                         .then(res => {
                                             Toast.success("Saved App Data.")
-                                            window.location = "/";
+                                            //window.location = "/";
                                         })
                                         .catch(err => {
                                             console.log(err);
