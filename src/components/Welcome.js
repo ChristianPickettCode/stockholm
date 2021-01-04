@@ -57,6 +57,7 @@ const Welcome = () => {
             welcomeRequest.request.forEach((i) => { 
                 responseData[i] = user.apps[app.appID][i]  
             });
+            responseData["userAppID"] = user.apps[app.appID].userAppID;
 
             ws.send(JSON.stringify({
                 message: "send",
