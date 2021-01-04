@@ -3,7 +3,7 @@ import { InputItem, WingBlank, Button, WhiteSpace, Toast, ActivityIndicator } fr
 import { API, Auth, graphqlOperation } from 'aws-amplify';
 import { listUserKeys } from '../graphql/queries';
 import { createUser, createUserKey } from '../graphql/mutations';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import jwt from "jsonwebtoken";
 
 const SignIn = () => {
@@ -12,6 +12,7 @@ const SignIn = () => {
     const [cognitoUser, setCognitoUser] = useState();
     const [confirmState, setConfirmState] = useState(false);
     const [success, setSuccess] = useState(false);
+    const location = useLocation();
 
     const signIn = async () => {
         if (email) {
@@ -50,7 +51,11 @@ const SignIn = () => {
                                             .graphql(graphqlOperation(createUser, { input : { data: d } }))
                                             .then(res => {
                                                 // console.log(res);
-                                                window.location = "/";
+                                                if (location.search) {
+                                                    window.location = `/welcome${location.search}`;
+                                                } else {
+                                                    window.location = "/";
+                                                }
                                             })
                                             .catch(err => {
                                                 console.log(err);
@@ -115,7 +120,7 @@ const SignIn = () => {
                         }
 
                         <h3>or</h3>
-                        <Link to="/" style={{color:"white"}}><Button type="primary">Register</Button></Link>
+                        <Link to={location && location.search ? `/welcome${location.search}` : "/"} style={{color:"white"}}><Button type="primary">Register</Button></Link>
                     </>
                 
                 }

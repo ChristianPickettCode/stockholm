@@ -170,7 +170,7 @@ const Welcome = () => {
             window.location = "/"
         }
         
-    }, [user]);
+    }, []);
     return (
         <div>
             <WelcomeModal 

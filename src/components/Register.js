@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { InputItem, WingBlank, Button, WhiteSpace, Toast } from 'antd-mobile';
 import { Auth } from 'aws-amplify';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 const Register = () => {
     const [email, setEmail] = useState();
     // const [fullName, setFullName] = useState();
+    const location = useLocation();
 
     const signUp = async () => {
         if (email) {
@@ -17,9 +18,14 @@ const Register = () => {
                 // }
             };
             await Auth.signUp(params).then(res => {
-                console.log(res);
+                // console.log(res);
                 Toast.success("Successfully signed up...redirect to sign in");
-                window.location = "/signin";
+                if (location.search) {
+                    window.location = `/signin${location.search}`;
+                } else {
+                    window.location = `/signin`;
+                }
+                
             }).catch(err => {
                 Toast.success(err.message, 2);
                 console.log(err);
@@ -55,7 +61,7 @@ const Register = () => {
                 <WhiteSpace size="xl" />
                 <Button type="primary" onClick={signUp}>Sign Up</Button>
                 <h3>or</h3>
-                <Link to="/signin" style={{color:"white"}}><Button type="primary">Sign In</Button></Link>
+                <Link to={location.search ? `/signin${location.search}` : "/signin"} style={{color:"white"}}><Button type="primary">Sign In</Button></Link>
             </WingBlank>
         </div>
     )
