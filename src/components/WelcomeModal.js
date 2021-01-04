@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
-import { Modal, List, Button, InputItem , Picker} from 'antd-mobile';
+import { Modal, List, Button, InputItem , Picker, Flex} from 'antd-mobile';
 import { UserContext } from '../context/UserContext';
+import { Link } from 'react-router-dom';
 
 const WelcomeModal = ({ modalVisible, setModalVisible, fullSend, welcomeRequest, setWelcomeResponse  }) => {
 
@@ -34,7 +35,14 @@ const WelcomeModal = ({ modalVisible, setModalVisible, fullSend, welcomeRequest,
                             // </Picker>
                         ))}
                         <List.Item>
-                            <Button type="primary" onClick={() => { setModalVisible(false); fullSend(); }}>Full Send</Button>
+                            <Flex>
+                                <Flex.Item>
+                                    <Button type="primary" onClick={() => { setModalVisible(false); fullSend(); }}>Yes</Button>
+                                </Flex.Item>
+                                <Flex.Item>
+                                    <Button type="warning" onClick={() => { setModalVisible(false);}}> <Link style={{color:"white"}} to="/">No</Link></Button>
+                                </Flex.Item>
+                            </Flex>
                         </List.Item>
                     </List>
                 }
