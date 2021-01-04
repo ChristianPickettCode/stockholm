@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Modal, List, Button, InputItem , Picker, Flex} from 'antd-mobile';
 import { UserContext } from '../context/UserContext';
 import { Link } from 'react-router-dom';
@@ -7,6 +7,11 @@ const WelcomeModal = ({ modalVisible, setModalVisible, fullSend, welcomeRequest,
 
     const user = useContext(UserContext);
     // console.log(user);
+    useEffect(() => {
+        if(welcomeRequest && welcomeRequest.request.includes("email")) {
+            setWelcomeResponse(prev => ({...prev, email: user.primaryEmail}))
+        }
+    }, [welcomeRequest])
     return (
         user &&
         <Modal
@@ -18,6 +23,14 @@ const WelcomeModal = ({ modalVisible, setModalVisible, fullSend, welcomeRequest,
                 {welcomeRequest && 
                     <List renderHeader={() => <div>Atlis Connect - {welcomeRequest.appName}</div>} className="popup-list">
                         {welcomeRequest.request.map((i, index) => (
+                            i === "email" ? 
+                                <InputItem
+                                    key={index}
+                                    value={user.primaryEmail}
+                                >
+                                    {i.charAt(0).toUpperCase() + i.slice(1)}
+                                </InputItem>
+                            :
                             <InputItem
                                 key={index}
                                 clear
