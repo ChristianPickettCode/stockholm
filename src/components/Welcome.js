@@ -139,7 +139,7 @@ const Welcome = () => {
 
             getAppData(appID);
 
-            const ws = new W3CWebSocket(`wss://u9j9kermu5.execute-api.us-east-1.amazonaws.com/dev`);
+            const ws = new W3CWebSocket(`wss://wifjuas349.execute-api.us-east-1.amazonaws.com/dev`);
             setWs(ws);
             ws.onopen = () =>  {
                 console.log("connected.");
