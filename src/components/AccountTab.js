@@ -1,6 +1,8 @@
 import React, { useContext, useState } from 'react';
 import { Auth, API, graphqlOperation } from 'aws-amplify';
-import { Button, Flex, InputItem, Toast, WhiteSpace, WingBlank } from 'antd-mobile';
+import { Button, Flex, Icon, InputItem, Toast, WhiteSpace, WingBlank } from 'antd-mobile';
+import { Avatar } from 'antd';
+import { UserOutlined } from '@ant-design/icons';
 import { UserContext } from '../context/UserContext';
 import { KContext } from '../context/KContext';
 import { createUserKey, createUser, deleteUser, deleteUserKey } from '../graphql/mutations';
@@ -61,9 +63,17 @@ const AccountTab = () => {
         <div style={{ backgroundColor: 'white', height: '100%', textAlign: 'center' }}>
             <WingBlank>
                 <div style={{ paddingTop: 60 }}>
-                    <h3>Account</h3>
-                    <WhiteSpace size="xl" />
-                    <Flex>
+                    {/* <h3>Account</h3> */}
+                    { user && 
+                    <>
+                        <Avatar size={64}><b style={{fontSize:"28px"}}>{user.primaryEmail.charAt(0).toUpperCase()}</b></Avatar>
+                        <WhiteSpace size="xl" />
+                        <h2>{user.primaryEmail}</h2>
+                    
+                    
+                    </>}
+                    
+                    {/* <Flex>
                         <Flex.Item>
                             { user && user.firstName ? 
                             <InputItem value={user.firstName} disabled />
@@ -78,13 +88,12 @@ const AccountTab = () => {
                             <InputItem placeholder="enter first name..." onChange={setLastName} />
                             }
                         </Flex.Item>
-                    </Flex>
+                    </Flex> */}
                     
-                    { user && user.primaryEmail && <InputItem value={user.primaryEmail} disabled/> }
+                    {/* { user && user.primaryEmail && <InputItem value={user.primaryEmail} disabled/> } */}
 
-                    { user && user.firstName ? "" : <Button type="primary" onClick={edit}>Edit</Button>}
+                    {/* { user && user.firstName ? "" : <Button type="primary" onClick={edit}>Edit</Button>} */}
                     
-                    <WhiteSpace size="xl" />
                     <WhiteSpace size="xl" />
                     <WhiteSpace size="xl" />
                     <Button type="primary" onClick={signOut}>Sign Out</Button>

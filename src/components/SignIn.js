@@ -94,33 +94,33 @@ const SignIn = () => {
 
     return (
         <div style={{position: 'fixed', height: '100%', width: '100%', top: 0 }}>
-            <WingBlank >
+            <WingBlank>
                 { success ? 
                     <ActivityIndicator />
                 : 
                     <>
                         <h1>Atlis</h1>
-                        <p>Welcome to atlis. Enter your email to sign in.</p>
+                        <p>Welcome to atlis. Enter your email to sign in. We believe the future is passwordless, we send you a temporary pass code to sign in.</p>
                         <WhiteSpace />
                         <InputItem placeholder="enter email..." onChange={e => setEmail(e)}/>
                         { confirmState ? 
                             <> 
                                 <WhiteSpace />
-                                <p style={{textAlign:"left"}}>Check your email, we sent you a sign in code.</p>
+                                <p>Check your email, we sent you a sign in code. (It may also be in your junk mail inbox)</p>
                                 <InputItem placeholder="enter sign in code..." onChange={e => setTempPass(e)}/>
 
                                 <WhiteSpace size="xl" />
-                                <Button type="primary" onClick={answerCustomChallenge}>Send Code</Button>
+                                <Button type="primary" onClick={answerCustomChallenge}>Sign in</Button>
                             </>
                         : 
                             <> 
                                 <WhiteSpace size="xl" />
-                                <Button type="primary" onClick={signIn}>Sign In</Button>
+                                <Button type="primary" onClick={signIn}>Send code</Button>
                             </>
                         }
 
-                        <h3>or</h3>
-                        <Link to={location && location.search ? `/welcome${location.search}` : "/"} style={{color:"white"}}><Button type="primary">Register</Button></Link>
+                        { !confirmState ? <><h3>or</h3><Link to={location && location.search ? `/welcome${location.search}` : "/"} style={{color:"white"}}><Button type="primary">Create an account</Button></Link> </>: ""}
+                        
                     </>
                 
                 }

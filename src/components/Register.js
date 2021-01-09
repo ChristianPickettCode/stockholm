@@ -59,9 +59,9 @@ const Register = () => {
                 <InputItem placeholder="enter email..." onChange={e => setEmail(e)}/>
 
                 <WhiteSpace size="xl" />
-                <Button type="primary" onClick={signUp}>Sign Up</Button>
+                <Button type="primary" onClick={signUp}>Create an account</Button>
                 <h3>or</h3>
-                <Link to={location.search ? `/signin${location.search}` : "/signin"} style={{color:"white"}}><Button type="primary">Sign In</Button></Link>
+                <Link to={location.search ? `/signin${location.search}` : "/signin"} style={{color:"white"}}><Button type="primary">Sign in</Button></Link>
             </WingBlank>
         </div>
     )

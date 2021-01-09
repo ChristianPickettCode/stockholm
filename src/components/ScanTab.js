@@ -21,8 +21,11 @@ const ScanTab = () => {
         <div style={{ backgroundColor: 'white', height: '100%', textAlign: 'center' }}>
             <WingBlank>
                 <div style={{ paddingTop: 60 }}>
-                    <h3>Scan Code</h3>
-                    <WhiteSpace />
+                    <h1>Scan QR Code</h1>
+                    <WhiteSpace size="xl" />
+                    <p>If the scan button does not work, use your phone camera instead.</p>
+                    <WhiteSpace size="xl" />
+                    <WhiteSpace size="xl" />
                     { scanning ? 
                         <QrReader
                             delay={300}

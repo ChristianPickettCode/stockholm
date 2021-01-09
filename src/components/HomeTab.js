@@ -11,14 +11,16 @@ const HomeTab = () => {
             <WhiteSpace size="lg" />
             { user ? Object.entries(user.apps).map(([key, value]) => (
                 <div key={key}>
-                    <Accordion>
-                        <Accordion.Panel header={value.appName}>
+                    <Accordion style={{textAlign:"left"}}>
+                        <Accordion.Panel  header={value.appName}>
                             <List>
                                 <List.Item key={key}>
-                                    <div style={{textAlign:"left"}}>
-                                        {Object.entries(value).map(([k,v]) => (
+                                    <div>
+                                        {/* {Object.entries(value).map(([k,v]) => (
                                             <p key={k}>{k} : {v}</p>
-                                        ))}
+                                        ))} */}
+                                        <p>Email : {value.email}</p>
+                                        <p>Name : {value.name}</p>
                                     </div>
                                 </List.Item>
                             </List>
