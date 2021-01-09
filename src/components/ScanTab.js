@@ -21,19 +21,25 @@ const ScanTab = () => {
         <div style={{ backgroundColor: 'white', height: '100%', textAlign: 'center' }}>
             <WingBlank>
                 <div style={{ paddingTop: 60 }}>
-                    <h1>Scan QR Code</h1>
-                    <WhiteSpace size="xl" />
-                    <p>If the scan button does not work, use your phone camera instead.</p>
-                    <WhiteSpace size="xl" />
-                    <WhiteSpace size="xl" />
                     { scanning ? 
+                    <div>
                         <QrReader
                             delay={300}
                             onError={(e) => Toast.fail(e)}
                             onScan={handleScan}
                             style={{ width: '100%' }}
                         />
-                    : <Button type="primary" onClick={() => setScanning(true)}>Scan</Button> }
+                        <Button style={{marginTop:"10px"}} type="primary" onClick={() => setScanning(false)}>Cancel</Button>
+                    </div>
+                    : 
+                    <div>
+                        <h1>Scan QR Code</h1>
+                        <WhiteSpace size="xl" />
+                        <p>If the scan button does not work, use your phone camera instead.</p>
+                        <WhiteSpace size="xl" />
+                        <WhiteSpace size="xl" />
+                        <Button type="primary" onClick={() => setScanning(true)}>Scan</Button>
+                    </div> }
                 </div>
             </WingBlank>
         </div>
