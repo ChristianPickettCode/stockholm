@@ -3,7 +3,7 @@
 Atlis mobile web app when you scan the qr code with you phones camera, you will be redirected to this app. (app.atlis.dev)
 
 create account
-![create account](./img/create_account.PNG)
+<img alt="create account" src="./img/create_account.PNG" height="100">
 
 sign in
 ![sign in](./img/sign_in.PNG)
