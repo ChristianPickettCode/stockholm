@@ -1,6 +1,6 @@
 # stockholm
 
-Atlis mobile web app when you scan the qr code with you phones camera, you will be redirected to this app. (app.atlis.dev)
+Atlis mobile web app when you scan the qr code with you phones camera, you will be redirected to this app. (https://app.atlis.dev)
 
 <div style="display:flex;">
   <img alt="create account" src="./img/create_account.PNG" height="300">
